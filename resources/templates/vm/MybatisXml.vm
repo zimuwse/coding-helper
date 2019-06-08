@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${mapperName}">
+    <resultMap id="${mapName}" type="${beanName}">
+    #foreach($javaField in $javaFields)
+        <result column="${javaField.name}" property="${javaField.fieldName}"/>
+    #end
+    </resultMap>
+
+    <sql id="fields">
+        #foreach($javaField in $javaFields)${javaField.name}#if($foreach.hasNext),#end#end
+
+    </sql>
+
+    <sql id="insertFields">
+        <trim suffixOverrides=",">
+        #foreach($javaField in $javaFields)
+    <if test="${javaField.fieldName} != null">${javaField.name},</if>
+        #end
+
+        </trim>
+    </sql>
+    <sql id="insertValues">
+        <trim suffixOverrides=",">
+        #foreach($javaField in $javaFields)
+    <if test="${javaField.fieldName} != null">#{$javaField.fieldName},</if>
+        #end
+
+        </trim>
+    </sql>
+
+    <sql id="conditionFields">
+        <trim prefixOverrides="AND">
+        #foreach($javaField in $javaFields)
+    <if test="${javaField.fieldName} != null">AND ${javaField.name}=#{$javaField.fieldName}</if>
+        #end
+
+        </trim>
+    </sql>
+
+    <sql id="updateFields">
+        <set>
+            <trim suffixOverrides=",">
+            #foreach($javaField in $javaFields)
+    <if test="${javaField.fieldName} != null">${javaField.name}=#{$javaField.fieldName},</if>
+            #end
+
+            </trim>
+        </set>
+    </sql>
+
+
+#foreach($mapperMethod in $mapperMethods)
+    #if($mapperMethod.type=="insert")
+
+    <insert id="${mapperMethod.name}" parameterType="Object" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO ${tableName}(<include refid="insertFields"/>) VALUES(<include refid="insertValues"/>)
+    </insert>
+    #elseif($mapperMethod.type=="update")
+
+    <update id="${mapperMethod.name}" parameterType="Object">
+        UPDATE ${tableName} <include refid="updateFields"/> WHERE #foreach($parameter in $mapperMethod.parameters)${parameter.fieldName}=#{$parameter.javaName}#if($foreach.hasNext) AND #end
+        #end
+
+    </update>
+    #elseif($mapperMethod.type=="select")
+
+    <select id="${mapperMethod.name}" parameterType="Object" resultMap="${mapName}">
+        SELECT <include refid="fields"/> FROM ${tableName} WHERE #if($mapperMethod.name=="getByCondition")<include refid="conditionFields"/>#else#foreach($parameter in $mapperMethod.parameters)${parameter.fieldName}=#{$parameter.javaName}#if($foreach.hasNext) AND #end#end#end
+
+    </select>
+    #end
+#end
+
+</mapper>
