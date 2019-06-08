@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="org.muzi.open.helper.ui.TableToJava">
+  <grid id="27dc6" binding="panel" layout-manager="GridLayoutManager" row-count="19" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+    <margin top="0" left="0" bottom="0" right="0"/>
+    <constraints>
+      <xy x="20" y="20" width="504" height="640"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <component id="8648d" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="DB Type"/>
+        </properties>
+      </component>
+      <component id="b28eb" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Driver Jar"/>
+        </properties>
+      </component>
+      <component id="57598" class="javax.swing.JTextField" binding="txtJar">
+        <constraints>
+          <grid row="1" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties>
+          <toolTipText value="double click to choose driver jar location"/>
+        </properties>
+      </component>
+      <component id="55bf5" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Host"/>
+        </properties>
+      </component>
+      <component id="ab56d" class="javax.swing.JTextField" binding="txtHost">
+        <constraints>
+          <grid row="2" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="65ab9" class="javax.swing.JComboBox" binding="cbDBType">
+        <constraints>
+          <grid row="0" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <toolTipText value="choose database type,now only mysql"/>
+        </properties>
+      </component>
+      <component id="5ddf" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="3" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Port"/>
+        </properties>
+      </component>
+      <component id="d46fa" class="javax.swing.JTextField" binding="txtPort">
+        <constraints>
+          <grid row="3" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="18f04" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="4" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="User"/>
+        </properties>
+      </component>
+      <component id="60856" class="javax.swing.JTextField" binding="txtUser">
+        <constraints>
+          <grid row="4" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="65bbc" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="5" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Pwd"/>
+        </properties>
+      </component>
+      <component id="185ac" class="javax.swing.JTextField" binding="txtPwd">
+        <constraints>
+          <grid row="5" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="37ef7" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="6" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Database"/>
+        </properties>
+      </component>
+      <component id="6c424" class="javax.swing.JTextField" binding="txtDB">
+        <constraints>
+          <grid row="6" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="4353d" class="javax.swing.JButton" binding="btnTestConnection">
+        <constraints>
+          <grid row="6" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="TestConnection"/>
+        </properties>
+      </component>
+      <component id="39b2d" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="7" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Table Prefix"/>
+        </properties>
+      </component>
+      <component id="391d1" class="javax.swing.JTextField" binding="txtTablePrefix">
+        <constraints>
+          <grid row="7" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties>
+          <toolTipText value="will be removed from java bean,mybatis mapper"/>
+        </properties>
+      </component>
+      <component id="be0e0" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="8" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Author"/>
+        </properties>
+      </component>
+      <component id="ed47c" class="javax.swing.JTextField" binding="txtAuthor">
+        <constraints>
+          <grid row="8" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="70de4" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="9" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Java Bean Suffix"/>
+        </properties>
+      </component>
+      <component id="97555" class="javax.swing.JTextField" binding="txtJavaBeanSuffix">
+        <constraints>
+          <grid row="9" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="e7662" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="10" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Java Bean Location"/>
+        </properties>
+      </component>
+      <component id="4bbb4" class="javax.swing.JTextField" binding="txtJavaBeanLocation">
+        <constraints>
+          <grid row="10" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties>
+          <toolTipText value="double click to select the path that will resolve the bean package name"/>
+        </properties>
+      </component>
+      <component id="d84a9" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="11" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Mybatis Mapper Suffix"/>
+        </properties>
+      </component>
+      <component id="b50c6" class="javax.swing.JTextField" binding="txtMapperSuffix">
+        <constraints>
+          <grid row="11" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="8fe9d" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="12" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Mybatis Mapper Location"/>
+        </properties>
+      </component>
+      <component id="f4e09" class="javax.swing.JTextField" binding="txtMapperLocation">
+        <constraints>
+          <grid row="12" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties>
+          <toolTipText value="double click to select the path that will resolve the mapper package name"/>
+        </properties>
+      </component>
+      <component id="d24ab" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="13" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Mybatis Xml Location"/>
+        </properties>
+      </component>
+      <component id="2f058" class="javax.swing.JTextField" binding="txtXmlLocation">
+        <constraints>
+          <grid row="13" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties>
+          <toolTipText value="double click to select the path for xml"/>
+        </properties>
+      </component>
+      <component id="22d2e" class="javax.swing.JCheckBox" binding="jcbGenBean">
+        <constraints>
+          <grid row="14" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Java Bean"/>
+        </properties>
+      </component>
+      <component id="f6b10" class="javax.swing.JCheckBox" binding="jcbGenMapper">
+        <constraints>
+          <grid row="14" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Mybatis Mapper"/>
+        </properties>
+      </component>
+      <component id="46e51" class="javax.swing.JCheckBox" binding="jcbGenXml">
+        <constraints>
+          <grid row="14" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Mybatis Xml"/>
+        </properties>
+      </component>
+      <component id="cc926" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="15" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Table To Preview"/>
+        </properties>
+      </component>
+      <component id="2db76" class="javax.swing.JTextField" binding="txtPreviewTable">
+        <constraints>
+          <grid row="15" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="35808" class="javax.swing.JButton" binding="btnPreview">
+        <constraints>
+          <grid row="15" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Preview"/>
+        </properties>
+      </component>
+      <component id="4b353" class="javax.swing.JButton" binding="btnSavePreference">
+        <constraints>
+          <grid row="18" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Save Preference"/>
+        </properties>
+      </component>
+      <component id="7a031" class="javax.swing.JButton" binding="btnGenerate">
+        <constraints>
+          <grid row="18" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Generate"/>
+          <toolTipText value="click to generate chosen files"/>
+        </properties>
+      </component>
+      <component id="60f17" class="javax.swing.JButton" binding="btnCancel">
+        <constraints>
+          <grid row="18" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Cancel"/>
+        </properties>
+      </component>
+      <scrollpane id="c75b3">
+        <constraints>
+          <grid row="16" column="0" row-span="1" col-span="4" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <grid id="65f91" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
+            <constraints/>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <component id="d4bcd" class="javax.swing.JTextArea" binding="txtGenTables">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                    <preferred-size width="450" height="60"/>
+                  </grid>
+                </constraints>
+                <properties>
+                  <lineWrap value="true"/>
+                  <toolTipText value="double click to choose tables"/>
+                  <wrapStyleWord value="true"/>
+                </properties>
+              </component>
+            </children>
+          </grid>
+        </children>
+      </scrollpane>
+      <component id="80aae" class="javax.swing.JCheckBox" binding="jcbOverwrite">
+        <constraints>
+          <grid row="17" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Overwrite Existing File?"/>
+        </properties>
+      </component>
+      <component id="2503c" class="javax.swing.JCheckBox" binding="jcbUseLombok">
+        <constraints>
+          <grid row="17" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Use Lombok?"/>
+          <toolTipText value="use @Data on java bean class "/>
+        </properties>
+      </component>
+    </children>
+  </grid>
+</form>

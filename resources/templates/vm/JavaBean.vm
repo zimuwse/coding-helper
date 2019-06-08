@@ -1,0 +1,39 @@
+package $packageName;
+
+#foreach($item in $imports)
+import $item;
+#end
+
+/**
+ * @author: $author
+ * @time: $createTime
+ * @table: $table.name
+ * @description: $table.comment
+ */
+#if($useLombok)@Data$new_line#end
+public class $clzName #if($parentClzName)extends $parentClzName #end{
+
+#foreach($field in $fields)
+    /**
+     * $field.comment
+     * max-len: $field.length
+     * not-null:#if($field.notNull) yes $new_line#else no $new_line#end
+     * default: '$field.defaultValue'
+     */
+    private $field.fieldType $field.fieldName;
+
+#end
+#if(!$useLombok)
+    #foreach($field in $fields)
+
+    public $field.fieldType get${field.upFirstFieldName}(){
+        return this.$field.fieldName;
+    }
+
+    public void set${field.upFirstFieldName}($field.fieldType $field.fieldName){
+        this.$field.fieldName = $field.fieldName;
+    }
+    #end
+#end
+
+}
