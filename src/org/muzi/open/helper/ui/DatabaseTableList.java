@@ -3,11 +3,10 @@ package org.muzi.open.helper.ui;
 import org.muzi.open.helper.config.db.DBOperation;
 import org.muzi.open.helper.config.db.DBTypeConfig;
 import org.muzi.open.helper.model.db.Table;
+import org.muzi.open.helper.model.db.TableMethod;
 import org.muzi.open.helper.model.java.TableToJavaPreference;
 
 import javax.swing.*;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
@@ -16,7 +15,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.EventObject;
+import java.util.*;
 import java.util.List;
 
 import static org.muzi.open.helper.util.LogUtils.log;
@@ -26,7 +25,7 @@ import static org.muzi.open.helper.util.LogUtils.log;
  * @time: 2019-07-26 18:39
  * @description:
  */
-public class DatabaseTableList extends BaseUI {
+public class DatabaseTableList extends BaseUI implements MapResult<String, Set<TableMethod>> {
     private static final long serialVersionUID = 5368055922684871432L;
     private JPanel panel;
     private JScrollPane jspDBTable;
@@ -35,9 +34,11 @@ public class DatabaseTableList extends BaseUI {
     private JButton btnCancel;
     private TableToJavaPreference preference;
     private List<Table> tables;
+    private Map<String, Set<TableMethod>> methods;
 
     public DatabaseTableList(TableToJavaPreference preference) throws HeadlessException {
         this.preference = preference;
+        this.methods = new HashMap<>();
     }
 
     @Override
@@ -76,31 +77,21 @@ public class DatabaseTableList extends BaseUI {
             @Override
             public void invoke(ActionEvent e) {
                 TableDataButton button = (TableDataButton) e.getSource();
-                log("config methods=row:{},col:{}", button.getRow(), button.getCol());
+                log("invoke=row:{},col:{}", button.getRow(), button.getCol());
                 String tableName = dbTable.getModel().getValueAt(button.getRow(), 1).toString();
-                new ChooseMethod(preference, tableName).show(600, 600);
+                new ChooseMethod(preference, tableName, DatabaseTableList.this).show(600, 600);
             }
 
             @Override
             public void onCall(int row, int col) {
+                log("onCall=row:{},col:{}", row, col);
                 String tableName = dbTable.getModel().getValueAt(row, 1).toString();
-                new ChooseMethod(preference, tableName).show(600, 600);
+                new ChooseMethod(preference, tableName, DatabaseTableList.this).show(600, 600);
             }
         };
-
-        model.addTableModelListener(new TableModelListener() {
-            @Override
-            public void tableChanged(TableModelEvent e) {
-                int col = e.getColumn();
-                int firstRow = e.getFirstRow();
-                int lastRow = e.getLastRow();
-                int type = e.getType();
-                log("addTableModelListener=col:{},firstRow:{},lastRow:{},type:{}", col, firstRow, lastRow, type);
-            }
-        });
         dbTable.setRowHeight(25);
         dbTable.setModel(model);
-        //dbTable.setRowSelectionAllowed(false);
+        dbTable.setRowSelectionAllowed(false);
         dbTable.setAutoCreateColumnsFromModel(true);
         dbTable.setBounds(30, 30, 500, 300);
         dbTable.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
@@ -110,6 +101,12 @@ public class DatabaseTableList extends BaseUI {
         dbTable.getColumnModel().getColumn(3).setCellEditor(new TableDataButtonEditor(event));
         //dbTable.updateUI();
 
+    }
+
+    @Override
+    public void addMapResult(String key, Set<TableMethod> val) {
+        log("addMapResult=key:{},val:{}", key, val);
+        this.methods.put(key, val);
     }
 
     static class CheckHeaderCellTableModel extends DefaultTableModel {

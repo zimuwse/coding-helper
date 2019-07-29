@@ -2,6 +2,9 @@ package org.muzi.open.helper.util;
 
 import org.muzi.open.helper.config.BaseConf;
 
+import java.util.Collection;
+import java.util.Map;
+
 /**
  * @author: muzi
  * @time: 2019-07-29 18:14
@@ -24,7 +27,15 @@ public class LogUtils {
             return;
         }
         for (int i = 0; i < arr.length && i < args.length; i++) {
-            builder.append(arr[i]).append(args[i]);
+            builder.append(arr[i]);
+            Object arg = args[i];
+            if (arg instanceof Collection) {
+                builder.append(StringUtil.toJson(arg));
+            } else if (arg instanceof Map) {
+                builder.append(StringUtil.toJson(arg));
+            } else {
+                builder.append(arg);
+            }
         }
         System.out.println(builder.toString());
     }

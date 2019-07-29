@@ -41,14 +41,17 @@ public class ChooseMethod extends BaseUI {
     private List<TableIndex> indices = null;
     private Set<String> indexFields = new HashSet<>();
 
+    private MapResult<String, Set<TableMethod>> mapResult;
+
     @Override
     protected JPanel panel() {
         return panel;
     }
 
-    public ChooseMethod(TableToJavaPreference preference, String table) {
+    public ChooseMethod(TableToJavaPreference preference, String table, MapResult<String, Set<TableMethod>> mapResult) {
         this.preference = preference;
         this.table = table;
+        this.mapResult = mapResult;
         try {
             DBOperation operation = DBTypeConfig.getInstance(this.preference);
             operation.connect();
@@ -210,6 +213,15 @@ public class ChooseMethod extends BaseUI {
                 for (int row : rows) {
                     model.removeRow(row);
                 }
+            }
+        });
+
+        btnConfirm.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Set<TableMethod> methods = getMethods();
+                mapResult.addMapResult(table, methods);
+                close();
             }
         });
     }
