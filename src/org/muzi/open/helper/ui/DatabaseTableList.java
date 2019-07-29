@@ -16,8 +16,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
+import static org.muzi.open.helper.util.LogUtils.log;
+
 /**
- * @author: li.rui
+ * @author: muzi
  * @time: 2019-07-26 18:39
  * @description:
  */
@@ -56,13 +58,14 @@ public class DatabaseTableList extends BaseUI {
     }
 
     private void initTable() {
-        String[] columns = {"ALL", "TABLE NAME", "TABLE COMMENT"};
+        String[] columns = {"ALL", "TABLE NAME", "TABLE COMMENT", "METHODS CONFIG"};
         Object[][] data = new Object[tables.size()][columns.length];
         for (int i = 0; i < tables.size(); i++) {
             Table table = tables.get(i);
             data[i][0] = false;
             data[i][1] = table.getName();
             data[i][2] = table.getComment();
+            data[i][3] = null;
         }
         CheckHeaderCellTableModel model = new CheckHeaderCellTableModel(data, columns);
 
@@ -70,6 +73,7 @@ public class DatabaseTableList extends BaseUI {
             @Override
             public void invoke(ActionEvent e) {
                 TableDataButton button = (TableDataButton) e.getSource();
+                log("config methods=row:{},col:{}", button.getRow(), button.getCol());
                 String tableName = dbTable.getModel().getValueAt(button.getRow(), 1).toString();
                 new ChooseMethod(preference, tableName).show(600, 600);
             }
@@ -82,7 +86,9 @@ public class DatabaseTableList extends BaseUI {
         dbTable.setBounds(30, 30, 500, 300);
         dbTable.setRowHeight(25);
         dbTable.getTableHeader().setDefaultRenderer(new CheckHeaderCellRenderer(dbTable));
+        dbTable.getColumnModel().getColumn(3).setCellRenderer(new ColumnCellRenderer());
         dbTable.getColumnModel().getColumn(3).setCellEditor(new TableDataButtonEditor(event));
+        dbTable.updateUI();
 
     }
 
@@ -95,14 +101,14 @@ public class DatabaseTableList extends BaseUI {
 
         @Override
         public boolean isCellEditable(int row, int column) {
-            return column == 0;
+            return column == 0 || column == getColumnCount() - 1;
         }
 
         @Override
         public Class<?> getColumnClass(int columnIndex) {
-            if (columnIndex == getColumnCount() - 1)
-                return JButton.class;
-            return getValueAt(0, columnIndex).getClass();
+            Class<?> clz = getValueAt(0, columnIndex).getClass();
+            log("getColumnClass=col:{},clz:{}", columnIndex, clz);
+            return clz;
         }
 
         public void selectAllOrNull(boolean value) {
@@ -112,27 +118,26 @@ public class DatabaseTableList extends BaseUI {
         }
     }
 
+
     static class CheckHeaderCellRenderer implements TableCellRenderer {
         CheckHeaderCellTableModel tableModel;
         JTableHeader tableHeader;
-        final JCheckBox selectBox;
-        final TableDataButton button;
+        private JCheckBox checkBox;
 
         public CheckHeaderCellRenderer(final JTable table) {
             this.tableModel = (CheckHeaderCellTableModel) table.getModel();
             this.tableHeader = table.getTableHeader();
-            selectBox = new JCheckBox();
-            selectBox.setSelected(false);
-            button = new TableDataButton();
-            button.setText("Config Methods");
+            checkBox = new JCheckBox();
+            checkBox.setText("ALL");
+            checkBox.setSelected(false);
             tableHeader.addMouseListener(new MouseAdapter() {
                 public void mouseClicked(MouseEvent e) {
                     if (e.getClickCount() > 0) {
                         // 获得选中列
                         int selectColumn = tableHeader.columnAtPoint(e.getPoint());
                         if (selectColumn == 0) {
-                            boolean value = !selectBox.isSelected();
-                            selectBox.setSelected(value);
+                            boolean value = !checkBox.isSelected();
+                            checkBox.setSelected(value);
                             tableModel.selectAllOrNull(value);
                             tableHeader.repaint();
                         }
@@ -146,22 +151,23 @@ public class DatabaseTableList extends BaseUI {
             String valueStr = (String) value;
             JComponent component = null;
             if (column == 0) {
-                selectBox.setHorizontalAlignment(SwingConstants.CENTER);
-                selectBox.setBorderPainted(true);
-                component = selectBox;
-            } else if (column == 3) {
-                button.setCol(column);
-                button.setRow(row);
+                checkBox.setBorderPainted(true);
+                checkBox.setHorizontalAlignment(SwingConstants.CENTER);
+                component = checkBox;
             } else {
                 JLabel label = new JLabel(valueStr);
                 label.setHorizontalAlignment(SwingConstants.RIGHT);
                 component = label;
             }
-            //component.setForeground(tableHeader.getForeground());
-            //component.setBackground(tableHeader.getBackground());
-            //component.setFont(tableHeader.getFont());
-            //component.setBorder(UIManager.getBorder("TableHeader.cellBorder"));
             return component;
+        }
+    }
+
+    static class ColumnCellRenderer implements TableCellRenderer {
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            return new TableDataButton("Config", row, column);
         }
     }
 
@@ -169,6 +175,12 @@ public class DatabaseTableList extends BaseUI {
         private static final long serialVersionUID = 3073329031741685959L;
         private int row;
         private int col;
+
+        public TableDataButton(String text, int row, int col) {
+            super(text);
+            this.row = row;
+            this.col = col;
+        }
 
         public int getRow() {
             return row;
@@ -194,20 +206,27 @@ public class DatabaseTableList extends BaseUI {
 
     class TableDataButtonEditor extends DefaultCellEditor {
         private static final long serialVersionUID = 3950200155663470286L;
-        private TableDataButton button;
         private TableDataButtonEvent event;
 
         public TableDataButtonEditor(TableDataButtonEvent event) {
             super(new JTextField());
             this.event = event;
-            button = new TableDataButton();
-            button.setText("Config Methods");
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            TableDataButton button = new TableDataButton("Config", row, column);
             button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    event.invoke(e);
+                    getEvent().invoke(e);
                 }
             });
+            return button;
+        }
+
+        private TableDataButtonEvent getEvent() {
+            return event;
         }
     }
 
