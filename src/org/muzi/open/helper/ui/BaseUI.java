@@ -1,6 +1,9 @@
 package org.muzi.open.helper.ui;
 
+import com.intellij.ide.util.BrowseFilesListener;
+import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.project.Project;
+import org.muzi.open.helper.config.FileType;
 import org.muzi.open.helper.model.KV;
 import org.muzi.open.helper.util.PopUtil;
 import org.muzi.open.helper.util.StringUtil;
@@ -99,6 +102,23 @@ public abstract class BaseUI extends JFrame {
                 comboBox.addItem(option.val());
             else
                 comboBox.addItem(option.key());
+    }
+
+    protected void bindFileBrowser(final JTextField txt, final String title, final String description, final FileType... fileTypes) {
+        int _type = FileType.FILE.value();
+        if (null != fileTypes && fileTypes.length > 0)
+            for (FileType fileType : fileTypes)
+                _type += fileType.value();
+        final int type = _type;
+        txt.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    FileChooserDescriptor fileChooserDescriptor = new FileChooserDescriptor(FileType.isFile(type), FileType.isFolder(type), FileType.isJar(type), true, true, true);
+                    new BrowseFilesListener(txt, title, description, fileChooserDescriptor).actionPerformed(null);
+                }
+            }
+        });
     }
 
     /**

@@ -15,6 +15,17 @@ public class TableField {
     private String defaultValue = "";
     private String extra = "";
 
+    public TableField() {
+    }
+
+    public TableField(String name, String type, boolean notNull, String comment, String defaultValue) {
+        this.name = name;
+        this.type = type;
+        this.notNull = notNull;
+        this.comment = comment;
+        this.defaultValue = defaultValue;
+    }
+
     public String getName() {
         return name;
     }

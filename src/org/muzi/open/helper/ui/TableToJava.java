@@ -1,6 +1,7 @@
 package org.muzi.open.helper.ui;
 
 import com.intellij.openapi.project.Project;
+import org.muzi.open.helper.config.FileType;
 import org.muzi.open.helper.config.TableToJavaConf;
 import org.muzi.open.helper.config.db.DBConfig;
 import org.muzi.open.helper.config.db.DBOperation;
@@ -10,6 +11,7 @@ import org.muzi.open.helper.model.PopException;
 import org.muzi.open.helper.model.db.Table;
 import org.muzi.open.helper.model.db.TableField;
 import org.muzi.open.helper.model.db.TableIndex;
+import org.muzi.open.helper.model.db.TableMethod;
 import org.muzi.open.helper.model.java.*;
 import org.muzi.open.helper.service.tplengine.velocity.VelocityTplEngine;
 import org.muzi.open.helper.util.*;
@@ -35,7 +37,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @time: 2018-05-21 17:05
  * @description:
  */
-public class TableToJava extends BaseUI implements IMultiSelect<Table> {
+public class TableToJava extends BaseUI implements IMultiSelect<Table, List<TableMethod>> {
     private static final long serialVersionUID = 3116988251961730584L;
     private TableToJava self = this;
     private JPanel panel;
@@ -65,6 +67,22 @@ public class TableToJava extends BaseUI implements IMultiSelect<Table> {
     private JButton btnCancel;
     private JCheckBox jcbOverwrite;
     private JCheckBox jcbUseLombok;
+    private JTextField txtSpringServiceLocation;
+    private JCheckBox springServiceLocationCheckBox;
+    private JCheckBox springControllerLocationCheckBox;
+    private JTextField txtSpringControllerLocation;
+    private JButton btnChooseTable;
+    private JTextField txtSpringServiceSuffix;
+    private JTextField txtSpringControllerSuffix;
+    private JTextField txtInsertMethodPrefix;
+    private JTextField txtInsertBatchMethodPrefix;
+    private JTextField txtDelMethodPrefix;
+    private JTextField txtUpdateMethodPrefix;
+    private JTextField txtPageQueryMethodPrefix;
+    private JTextField txtSelectOneMethodPrefix;
+    private JTextField txtSelectListMethodPrefix;
+
+    private Map<String, List<TableMethod>> methodsConfigMap = new HashMap<>();
 
     public TableToJava() throws HeadlessException {
     }
@@ -88,10 +106,16 @@ public class TableToJava extends BaseUI implements IMultiSelect<Table> {
     protected void initBind() {
         super.initBind();
         bindDBType();
-        bindTxtClickFileDialog(txtJar, this, "please choose driver jar location", CmdUtil.getUserHome(), false, "jar");
-        bindTxtClickFileDialog(txtJavaBeanLocation, this, "please choose java bean location", null, true, null);
-        bindTxtClickFileDialog(txtMapperLocation, this, "please choose mybatis mapper location", null, true, null);
-        bindTxtClickFileDialog(txtXmlLocation, this, "please choose mybatis xml location", null, true, null);
+        bindFileBrowser(txtJar, "Driver Jar", "Choose your driver jar location", FileType.JAR);
+        bindFileBrowser(txtJavaBeanLocation, "Java Bean Location", "Choose your java bean location", FileType.FOLDER);
+        bindFileBrowser(txtMapperLocation, "Mybatis Mapper Location", "Choose your mybatis mapper location", FileType.FOLDER);
+        bindFileBrowser(txtXmlLocation, "Mybatis XML Location", "Choose your mybatis XML location", FileType.FOLDER);
+        bindFileBrowser(txtSpringServiceLocation, "Spring Service Bean Location", "Choose your spring service bean location", FileType.FOLDER);
+        bindFileBrowser(txtSpringControllerLocation, "Spring Controller Bean Location", "Choose your spring controller bean location", FileType.FOLDER);
+        //bindTxtClickFileDialog(txtJar, this, "please choose driver jar location", CmdUtil.getUserHome(), false, "jar");
+        //bindTxtClickFileDialog(txtJavaBeanLocation, this, "please choose java bean location", null, true, null);
+        //bindTxtClickFileDialog(txtMapperLocation, this, "please choose mybatis mapper location", null, true, null);
+        //bindTxtClickFileDialog(txtXmlLocation, this, "please choose mybatis xml location", null, true, null);
         bindTestConnection();
         bindCancel(btnCancel, this);
         bindSavePreference();
@@ -206,6 +230,20 @@ public class TableToJava extends BaseUI implements IMultiSelect<Table> {
             txtAuthor.setText(CmdUtil.getUserName());
         txtTablePrefix.setText(preference.getTablePrefix());
         jcbOverwrite.setSelected(preference.isOverwrite());
+        //method prefix
+        txtDelMethodPrefix.setText(JavaMethodUtil.getMethodPrefix(preference, JavaMethodType.DELETE));
+        txtInsertMethodPrefix.setText(JavaMethodUtil.getMethodPrefix(preference, JavaMethodType.INSERT));
+        txtInsertBatchMethodPrefix.setText(JavaMethodUtil.getMethodPrefix(preference, JavaMethodType.INSERT_BATCH));
+        txtPageQueryMethodPrefix.setText(JavaMethodUtil.getMethodPrefix(preference, JavaMethodType.PAGE_QUERY));
+        txtUpdateMethodPrefix.setText(JavaMethodUtil.getMethodPrefix(preference, JavaMethodType.UPDATE));
+        txtSelectOneMethodPrefix.setText(JavaMethodUtil.getMethodPrefix(preference, JavaMethodType.SELECT_ONE));
+        txtSelectListMethodPrefix.setText(JavaMethodUtil.getMethodPrefix(preference, JavaMethodType.SELECT_LIST));
+        //spring preference
+        txtSpringControllerSuffix.setText(StringUtil.isEmpty(preference.getSpringControllerSuffix()) ? "Controller" : preference.getSpringControllerSuffix());
+        txtSpringServiceSuffix.setText(StringUtil.isEmpty(preference.getSpringServiceSuffix()) ? "Service" : preference.getSpringServiceSuffix());
+        txtSpringControllerLocation.setText(preference.getSpringControllerLocation());
+        txtSpringServiceLocation.setText(preference.getSpringServiceLocation());
+
     }
 
     private TableToJavaPreference getPreference(int operation) {
@@ -269,6 +307,8 @@ public class TableToJava extends BaseUI implements IMultiSelect<Table> {
         boolean beanGen = jcbGenBean.isSelected();
         boolean mapperGen = jcbGenMapper.isSelected();
         boolean xmlGen = jcbGenXml.isSelected();
+        boolean springService = springServiceLocationCheckBox.isSelected();
+        boolean springController = springServiceLocationCheckBox.isSelected();
         boolean gen = beanGen || mapperGen || xmlGen;
         if (isGenerate && !gen)
             throw new PopException(jcbGenBean, "must choose at least one type to generate");
@@ -277,6 +317,10 @@ public class TableToJava extends BaseUI implements IMultiSelect<Table> {
         if (isGenerate && (null == tables || tables.trim().length() == 0)) {
             throw new PopException(txtGenTables, "must choose at least one table to generate");
         }
+        if (springService && StringUtil.isEmpty(txtSpringServiceLocation.getText()))
+            throw new PopException(txtGenTables, "must choose spring service bean location");
+        if (springController && StringUtil.isEmpty(txtSpringControllerLocation.getText()))
+            throw new PopException(txtGenTables, "must choose spring controller bean location");
 
         TableToJavaPreference config = new TableToJavaPreference();
         config.setDriverJar(jar);
@@ -302,6 +346,21 @@ public class TableToJava extends BaseUI implements IMultiSelect<Table> {
         config.setOverwrite(jcbOverwrite.isSelected());
         config.setLombok(jcbUseLombok.isSelected());
         config.setTables(tables.split(","));
+        //method prefix
+        config.setMethodInsert(txtInsertMethodPrefix.getText());
+        config.setMethodQueryList(txtSelectListMethodPrefix.getText());
+        config.setMethodQueryOne(txtSelectOneMethodPrefix.getText());
+        config.setMethodInsertBatch(txtInsertBatchMethodPrefix.getText());
+        config.setMethodPageQuery(txtPageQueryMethodPrefix.getText());
+        config.setMethodDelete(txtDelMethodPrefix.getText());
+        config.setMethodUpdate(txtUpdateMethodPrefix.getText());
+        //spring
+        config.setSpringController(springController);
+        config.setSpringService(springService);
+        config.setSpringServiceSuffix(txtSpringServiceSuffix.getText());
+        config.setSpringControllerSuffix(txtSpringControllerSuffix.getText());
+        config.setSpringServiceLocation(txtSpringServiceLocation.getText());
+        config.setSpringControllerLocation(txtSpringControllerLocation.getText());
         return config;
     }
 
@@ -384,6 +443,10 @@ public class TableToJava extends BaseUI implements IMultiSelect<Table> {
         return new Table(checkBox.getText(), checkBox.getToolTipText());
     }
 
+    @Override
+    public Map<String, List<TableMethod>> getResultMap() {
+        return this.methodsConfigMap;
+    }
 
     class GenerateTask implements Runnable {
         private TableToJavaPreference preference;

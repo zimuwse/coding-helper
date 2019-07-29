@@ -17,7 +17,7 @@ import java.util.List;
  * @time: 2018-05-24 19:43
  * @description:
  */
-public class MultiSelectCheckBox<T> extends BaseUI {
+public class MultiSelectCheckBox<T,R> extends BaseUI {
     private static final long serialVersionUID = 1965460912074016683L;
     private JPanel panel;
     private JPanel wrapper;
@@ -27,11 +27,11 @@ public class MultiSelectCheckBox<T> extends BaseUI {
     private JButton btnReverse;
     private JButton btnSure;
     private JButton btnCancel;
-    private IMultiSelect<T> select;
+    private IMultiSelect<T,R> select;
     private List<T> options;
 
 
-    public MultiSelectCheckBox(IMultiSelect<T> select) {
+    public MultiSelectCheckBox(IMultiSelect<T,R> select) {
         this.select = select;
         this.setTitle(select.getMultiSelectTitle());
         this.options = select.getMultiSelectOptions();

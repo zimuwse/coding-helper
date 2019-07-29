@@ -68,7 +68,7 @@ public class BaseConf {
 
         private static Map<String, String> map;
 
-        private static boolean DEBUG = false;
+        private static boolean DEBUG = true;
 
         static {
             if (isDebug())

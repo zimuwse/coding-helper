@@ -4,6 +4,8 @@ import org.muzi.open.helper.config.PersistableConfig;
 import org.muzi.open.helper.config.db.DBConfig;
 import org.muzi.open.helper.util.JavaUtil;
 
+import java.util.List;
+
 /**
  * @author: muzi
  * @time: 2018-05-24 10:14
@@ -26,6 +28,28 @@ public class TableToJavaPreference extends DBConfig {
     private boolean lombok;
     @PersistableConfig(skip = true)
     private String[] tables;
+    //method config from table fields.
+    @PersistableConfig(skip = true)
+    private List<JavaMethodConfig> javaMethodConfigs;
+    private String methodPageQuery;
+    private String methodQueryList;
+    private String methodQueryOne;
+    private String methodDelete;
+    private String methodUpdate;
+    private String methodInsert;
+    private String methodInsertBatch;
+    //page query config
+    private String pqReqClz;
+    private String pqResClz;
+    private String pqReqSize;
+    private String pqReqOffset;
+    //spring
+    private boolean springService;
+    private boolean springController;
+    private String springServiceSuffix;
+    private String springControllerSuffix;
+    private String springServiceLocation;
+    private String springControllerLocation;
 
     public String getAuthor() {
         return author;
@@ -145,5 +169,150 @@ public class TableToJavaPreference extends DBConfig {
 
     public void setLombok(boolean lombok) {
         this.lombok = lombok;
+    }
+
+
+    public List<JavaMethodConfig> getJavaMethodConfigs() {
+        return javaMethodConfigs;
+    }
+
+    public void setJavaMethodConfigs(List<JavaMethodConfig> javaMethodConfigs) {
+        this.javaMethodConfigs = javaMethodConfigs;
+    }
+
+    public String getMethodPageQuery() {
+        return methodPageQuery;
+    }
+
+    public void setMethodPageQuery(String methodPageQuery) {
+        this.methodPageQuery = methodPageQuery;
+    }
+
+    public String getMethodQueryList() {
+        return methodQueryList;
+    }
+
+    public void setMethodQueryList(String methodQueryList) {
+        this.methodQueryList = methodQueryList;
+    }
+
+    public String getMethodQueryOne() {
+        return methodQueryOne;
+    }
+
+    public void setMethodQueryOne(String methodQueryOne) {
+        this.methodQueryOne = methodQueryOne;
+    }
+
+    public String getMethodDelete() {
+        return methodDelete;
+    }
+
+    public void setMethodDelete(String methodDelete) {
+        this.methodDelete = methodDelete;
+    }
+
+    public String getMethodUpdate() {
+        return methodUpdate;
+    }
+
+    public void setMethodUpdate(String methodUpdate) {
+        this.methodUpdate = methodUpdate;
+    }
+
+    public String getMethodInsert() {
+        return methodInsert;
+    }
+
+    public void setMethodInsert(String methodInsert) {
+        this.methodInsert = methodInsert;
+    }
+
+    public String getMethodInsertBatch() {
+        return methodInsertBatch;
+    }
+
+    public void setMethodInsertBatch(String methodInsertBatch) {
+        this.methodInsertBatch = methodInsertBatch;
+    }
+
+    public String getPqReqClz() {
+        return pqReqClz;
+    }
+
+    public void setPqReqClz(String pqReqClz) {
+        this.pqReqClz = pqReqClz;
+    }
+
+    public String getPqResClz() {
+        return pqResClz;
+    }
+
+    public void setPqResClz(String pqResClz) {
+        this.pqResClz = pqResClz;
+    }
+
+    public String getPqReqSize() {
+        return pqReqSize;
+    }
+
+    public void setPqReqSize(String pqReqSize) {
+        this.pqReqSize = pqReqSize;
+    }
+
+    public String getPqReqOffset() {
+        return pqReqOffset;
+    }
+
+    public void setPqReqOffset(String pqReqOffset) {
+        this.pqReqOffset = pqReqOffset;
+    }
+
+    public String getSpringServiceSuffix() {
+        return springServiceSuffix;
+    }
+
+    public void setSpringServiceSuffix(String springServiceSuffix) {
+        this.springServiceSuffix = springServiceSuffix;
+    }
+
+    public String getSpringControllerSuffix() {
+        return springControllerSuffix;
+    }
+
+    public void setSpringControllerSuffix(String springControllerSuffix) {
+        this.springControllerSuffix = springControllerSuffix;
+    }
+
+    public String getSpringServiceLocation() {
+        return springServiceLocation;
+    }
+
+    public void setSpringServiceLocation(String springServiceLocation) {
+        this.springServiceLocation = springServiceLocation;
+    }
+
+    public String getSpringControllerLocation() {
+        return springControllerLocation;
+    }
+
+    public void setSpringControllerLocation(String springControllerLocation) {
+        this.springControllerLocation = springControllerLocation;
+    }
+
+    public boolean isSpringService() {
+        return springService;
+    }
+
+    public void setSpringService(boolean springService) {
+        this.springService = springService;
+    }
+
+    public boolean isSpringController() {
+        return springController;
+    }
+
+    public void setSpringController(boolean springController) {
+        this.springController = springController;
     }
 }

@@ -35,6 +35,11 @@
                 description="Coding-Helper">
             <add-to-group group-id="ToolsMenu" anchor="last"/>
         </action>
+
+        <action id="Test-Coding-Helper" class="org.muzi.open.helper.TestMainAction" text="Test-Coding-Helper"
+                description="Test-Coding-Helper">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        </action>
     </actions>
 
 </idea-plugin>

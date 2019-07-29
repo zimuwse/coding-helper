@@ -45,7 +45,7 @@ public class IndexUI extends BaseUI {
         btnDB2Java.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new TableToJava(project()).show(500, 700);
+                new TableToJava(project()).show(700, 700);
             }
         });
 

@@ -15,6 +15,7 @@ public class DBTypeConfig {
 
     static {
         map.put("MYSQL", MysqlOperation.class);
+        map.put("MYSQL-DEBUG", DebugMysqlOperation.class);
     }
 
     public static DBOperation getInstance(DBConfig config) throws Exception {

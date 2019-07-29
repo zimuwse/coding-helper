@@ -1,5 +1,9 @@
 package org.muzi.open.helper.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Set;
@@ -168,6 +172,22 @@ public class StringUtil {
         });
         set.addAll(Arrays.asList(arr));
         return set.toArray(new String[0]);
+    }
+
+    public static String toJson(Object obj) {
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (JsonProcessingException e) {
+            return "{}";
+        }
+    }
+
+    public static <T> T fromJson(String json, Class<T> clz) {
+        try {
+            return new ObjectMapper().readValue(json, clz);
+        } catch (IOException e) {
+            return null;
+        }
     }
 
 }
