@@ -27,7 +27,7 @@ public class DebugMysqlOperation extends MysqlOperation {
     @Override
     public List<Table> tables(String database) {
         List<Table> list = new ArrayList<>(1);
-        for (int i = 0; i < 1; i++)
+        for (int i = 0; i < 10; i++)
             list.add(new Table("order", "订单"));
         return list;
     }

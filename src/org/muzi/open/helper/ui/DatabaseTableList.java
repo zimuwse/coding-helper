@@ -6,6 +6,8 @@ import org.muzi.open.helper.model.db.Table;
 import org.muzi.open.helper.model.java.TableToJavaPreference;
 
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
@@ -14,6 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.EventObject;
 import java.util.List;
 
 import static org.muzi.open.helper.util.LogUtils.log;
@@ -77,18 +80,35 @@ public class DatabaseTableList extends BaseUI {
                 String tableName = dbTable.getModel().getValueAt(button.getRow(), 1).toString();
                 new ChooseMethod(preference, tableName).show(600, 600);
             }
+
+            @Override
+            public void onCall(int row, int col) {
+                String tableName = dbTable.getModel().getValueAt(row, 1).toString();
+                new ChooseMethod(preference, tableName).show(600, 600);
+            }
         };
 
-        dbTable.setModel(model);
-        dbTable.setAutoCreateColumnsFromModel(true);
-        dbTable.setPreferredScrollableViewportSize(new Dimension(500, 300));
-        dbTable.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
-        dbTable.setBounds(30, 30, 500, 300);
+        model.addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                int col = e.getColumn();
+                int firstRow = e.getFirstRow();
+                int lastRow = e.getLastRow();
+                int type = e.getType();
+                log("addTableModelListener=col:{},firstRow:{},lastRow:{},type:{}", col, firstRow, lastRow, type);
+            }
+        });
         dbTable.setRowHeight(25);
+        dbTable.setModel(model);
+        //dbTable.setRowSelectionAllowed(false);
+        dbTable.setAutoCreateColumnsFromModel(true);
+        dbTable.setBounds(30, 30, 500, 300);
+        dbTable.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+        dbTable.setPreferredScrollableViewportSize(new Dimension(500, 300));
         dbTable.getTableHeader().setDefaultRenderer(new CheckHeaderCellRenderer(dbTable));
         dbTable.getColumnModel().getColumn(3).setCellRenderer(new ColumnCellRenderer());
         dbTable.getColumnModel().getColumn(3).setCellEditor(new TableDataButtonEditor(event));
-        dbTable.updateUI();
+        //dbTable.updateUI();
 
     }
 
@@ -106,9 +126,7 @@ public class DatabaseTableList extends BaseUI {
 
         @Override
         public Class<?> getColumnClass(int columnIndex) {
-            Class<?> clz = getValueAt(0, columnIndex).getClass();
-            log("getColumnClass=col:{},clz:{}", columnIndex, clz);
-            return clz;
+            return getValueAt(0, columnIndex).getClass();
         }
 
         public void selectAllOrNull(boolean value) {
@@ -164,10 +182,9 @@ public class DatabaseTableList extends BaseUI {
     }
 
     static class ColumnCellRenderer implements TableCellRenderer {
-
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            return new TableDataButton("Config", row, column);
+            return new TableDataButton("Config-render", row, column);
         }
     }
 
@@ -201,6 +218,8 @@ public class DatabaseTableList extends BaseUI {
 
     interface TableDataButtonEvent {
         void invoke(ActionEvent e);
+
+        void onCall(int row, int col);
     }
 
 
@@ -214,14 +233,26 @@ public class DatabaseTableList extends BaseUI {
         }
 
         @Override
+        public boolean isCellEditable(EventObject anEvent) {
+            return true;
+        }
+
+        @Override
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            TableDataButton button = new TableDataButton("Config", row, column);
+            TableDataButton button = new TableDataButton("Config-edit", row, column);
             button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    TableDataButtonEditor.this.fireEditingCanceled();
                     getEvent().invoke(e);
                 }
             });
+            /*new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    getEvent().onCall(row, column);
+                }
+            }).start();*/
             return button;
         }
 
