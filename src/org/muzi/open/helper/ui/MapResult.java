@@ -7,4 +7,6 @@ package org.muzi.open.helper.ui;
  */
 public interface MapResult<K, V> {
     void addMapResult(K key, V val);
+
+    V getMapResult(K key);
 }

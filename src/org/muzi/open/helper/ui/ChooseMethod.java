@@ -8,6 +8,7 @@ import org.muzi.open.helper.model.db.TableMethod;
 import org.muzi.open.helper.model.java.JavaMethodType;
 import org.muzi.open.helper.model.java.JavaMethodUtil;
 import org.muzi.open.helper.model.java.TableToJavaPreference;
+import org.muzi.open.helper.util.ParamUtil;
 import org.muzi.open.helper.util.PopUtil;
 import org.muzi.open.helper.util.StringUtil;
 
@@ -75,7 +76,11 @@ public class ChooseMethod extends BaseUI {
         initMethodType();
         initFieldsTable();
         initMethodsTable();
-        initDefaultMethod();
+        if (null == mapResult.getMapResult(table)) {
+            initDefaultMethod();
+        } else {
+            loadExist(mapResult.getMapResult(table));
+        }
     }
 
     private void initMethodType() {
@@ -147,6 +152,21 @@ public class ChooseMethod extends BaseUI {
             } else {
                 addMethod(JavaMethodType.SELECT_LIST, buildMethodName(JavaMethodType.SELECT_LIST, fields, fieldArr), fieldArr);
             }
+        }
+    }
+
+    private void loadExist(Set<TableMethod> methods) {
+        DefaultTableModel model = (DefaultTableModel) tableMethos.getModel();
+        for (TableMethod method : methods) {
+            Object[] row = new Object[3];
+            row[0] = method.getMethodName();
+            row[1] = method.getMethodType();
+            if (ParamUtil.isNullOrEmpty(method.getTableFields())) {
+                row[2] = "";
+            } else {
+                row[2] = StringUtil.join(method.getTableFields().toArray(new String[0]), ",");
+            }
+            model.addRow(row);
         }
     }
 

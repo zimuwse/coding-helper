@@ -109,6 +109,11 @@ public class DatabaseTableList extends BaseUI implements MapResult<String, Set<T
         this.methods.put(key, val);
     }
 
+    @Override
+    public Set<TableMethod> getMapResult(String key) {
+        return this.methods.get(key);
+    }
+
     static class CheckHeaderCellTableModel extends DefaultTableModel {
         private static final long serialVersionUID = -3295581072864170310L;
 

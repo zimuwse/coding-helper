@@ -1,5 +1,9 @@
 package org.muzi.open.helper.util;
 
+import java.lang.reflect.Array;
+import java.util.Collection;
+import java.util.Map;
+
 /**
  * @author: zimuwse
  * @time: 2019-07-25 11:36
@@ -16,5 +20,21 @@ public class ParamUtil {
                 return true;
         }
         return false;
+    }
+
+    public static boolean isNullOrEmpty(Object obj) {
+        if (null == obj) {
+            return true;
+        } else if (obj instanceof CharSequence) {
+            return ((String) obj).trim().length() == 0;
+        } else if (obj instanceof Collection) {
+            return ((Collection) obj).isEmpty();
+        } else if (obj instanceof Map) {
+            return ((Map) obj).isEmpty();
+        } else if (obj.getClass().isArray()) {
+            return Array.getLength(obj) == 0;
+        } else {
+            return false;
+        }
     }
 }
