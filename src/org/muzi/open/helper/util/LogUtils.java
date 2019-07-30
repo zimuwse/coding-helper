@@ -2,6 +2,8 @@ package org.muzi.open.helper.util;
 
 import org.muzi.open.helper.config.BaseConf;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Map;
 
@@ -33,10 +35,20 @@ public class LogUtils {
                 builder.append(StringUtil.toJson(arg));
             } else if (arg instanceof Map) {
                 builder.append(StringUtil.toJson(arg));
+            } else if (arg instanceof Throwable) {
+                builder.append(getErrDetail((Throwable) arg));
             } else {
                 builder.append(arg);
             }
         }
         System.out.println(builder.toString());
+    }
+
+
+    public static String getErrDetail(Throwable throwable) {
+        StringWriter sw = new StringWriter();
+        throwable.printStackTrace(new PrintWriter(sw));
+        String[] errs = sw.toString().split("\\n[\\t]?");
+        return StringUtil.join(errs, "");
     }
 }

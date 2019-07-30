@@ -20,6 +20,8 @@ import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
 
+import static org.muzi.open.helper.util.LogUtils.log;
+
 /**
  * @author: li.rui
  * @time: 2019-07-23 22:32
@@ -42,17 +44,17 @@ public class ChooseMethod extends BaseUI {
     private List<TableIndex> indices = null;
     private Set<String> indexFields = new HashSet<>();
 
-    private MapResult<String, Set<TableMethod>> mapResult;
+    private MapUIResult<String, Set<TableMethod>> mapUIResult;
 
     @Override
     protected JPanel panel() {
         return panel;
     }
 
-    public ChooseMethod(TableToJavaPreference preference, String table, MapResult<String, Set<TableMethod>> mapResult) {
+    public ChooseMethod(TableToJavaPreference preference, String table, MapUIResult<String, Set<TableMethod>> mapUIResult) {
         this.preference = preference;
         this.table = table;
-        this.mapResult = mapResult;
+        this.mapUIResult = mapUIResult;
         try {
             DBOperation operation = DBTypeConfig.getInstance(this.preference);
             operation.connect();
@@ -66,20 +68,22 @@ public class ChooseMethod extends BaseUI {
             }
             operation.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            log("ChooseMethod=err:{}", e);
+            PopUtil.pop(e);
         }
     }
 
     @Override
     protected void initUI() {
+        setTitle("Config Methods Of Table[" + table + "]");
         super.initUI();
         initMethodType();
         initFieldsTable();
         initMethodsTable();
-        if (null == mapResult.getMapResult(table)) {
+        if (null == mapUIResult.getMapUIResult(table)) {
             initDefaultMethod();
         } else {
-            loadExist(mapResult.getMapResult(table));
+            loadExist(mapUIResult.getMapUIResult(table));
         }
     }
 
@@ -90,7 +94,7 @@ public class ChooseMethod extends BaseUI {
     }
 
     private void initFieldsTable() {
-        String[] columns = {"NAME", "TYPE", "NULL", "DEFAULT", "COMMENT"};
+        String[] columns = {"NAME", "TYPE", "NOT NULL", "DEFAULT", "COMMENT"};
         Object[][] data = null;
         if (null != fields) {
             data = new Object[fields.size()][columns.length];
@@ -240,7 +244,7 @@ public class ChooseMethod extends BaseUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Set<TableMethod> methods = getMethods();
-                mapResult.addMapResult(table, methods);
+                mapUIResult.addMapUIResult(table, methods);
                 close();
             }
         });

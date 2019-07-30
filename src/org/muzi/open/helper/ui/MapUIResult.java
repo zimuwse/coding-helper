@@ -5,8 +5,8 @@ package org.muzi.open.helper.ui;
  * @time: 2019-07-29 20:48
  * @description:
  */
-public interface MapResult<K, V> {
-    void addMapResult(K key, V val);
+public interface MapUIResult<K, V> {
+    void addMapUIResult(K key, V val);
 
-    V getMapResult(K key);
+    V getMapUIResult(K key);
 }

@@ -20,8 +20,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -37,9 +35,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @time: 2018-05-21 17:05
  * @description:
  */
-public class TableToJava extends BaseUI implements IMultiSelect<Table, List<TableMethod>> {
+public class TableToJava extends BaseUI implements UIResult<Map<String, Set<TableMethod>>>, UIMapConfig<String, String> {
     private static final long serialVersionUID = 3116988251961730584L;
-    private TableToJava self = this;
     private JPanel panel;
     private JTextField txtJar;
     private JTextField txtHost;
@@ -69,20 +66,16 @@ public class TableToJava extends BaseUI implements IMultiSelect<Table, List<Tabl
     private JCheckBox jcbUseLombok;
     private JTextField txtSpringServiceLocation;
     private JCheckBox springServiceLocationCheckBox;
-    private JCheckBox springControllerLocationCheckBox;
+    private JCheckBox springControllerCheckBox;
     private JTextField txtSpringControllerLocation;
-    private JButton btnChooseTable;
+    private JButton btnMethodNamePrefixSetting;
     private JTextField txtSpringServiceSuffix;
     private JTextField txtSpringControllerSuffix;
-    private JTextField txtInsertMethodPrefix;
-    private JTextField txtInsertBatchMethodPrefix;
-    private JTextField txtDelMethodPrefix;
-    private JTextField txtUpdateMethodPrefix;
-    private JTextField txtPageQueryMethodPrefix;
-    private JTextField txtSelectOneMethodPrefix;
-    private JTextField txtSelectListMethodPrefix;
+    private JButton btnChooseTables;
 
     private Map<String, List<TableMethod>> methodsConfigMap = new HashMap<>();
+
+    private Map<String, String> methodNameConfig = new HashMap<>();
 
     public TableToJava() throws HeadlessException {
     }
@@ -99,6 +92,7 @@ public class TableToJava extends BaseUI implements IMultiSelect<Table, List<Tabl
     @Override
     protected void initUI() {
         super.initUI();
+        setTitle("Generate Files From Database Tables");
         loadPreference();
     }
 
@@ -141,13 +135,39 @@ public class TableToJava extends BaseUI implements IMultiSelect<Table, List<Tabl
 
 
     private void bindSelectTables() {
-        txtGenTables.addMouseListener(new MouseAdapter() {
+        btnMethodNamePrefixSetting.addActionListener(new ActionListener() {
             @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2)
-                    new MultiSelectCheckBox<>(self).show(400, 400);
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    new MethodPrefixConfig(TableToJava.this).show(400, 320);
+                } catch (HeadlessException e1) {
+                    PopUtil.err(btnMethodNamePrefixSetting, e1);
+                }
             }
         });
+        btnChooseTables.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    new DatabaseTableList(getPreference(OperatorType.PREVIEW), TableToJava.this).show(800, 600);
+                } catch (HeadlessException e1) {
+                    PopUtil.err(txtGenTables, e1);
+                }
+            }
+        });
+        /*txtGenTables.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    //new MultiSelectCheckBox<>(self).show(400, 400);
+                    try {
+                        new DatabaseTableList(getPreference(OperatorType.PREVIEW), TableToJava.this).show(800, 600);
+                    } catch (HeadlessException e1) {
+                        PopUtil.err(txtGenTables, e1);
+                    }
+                }
+            }
+        });*/
     }
 
     private void bindPreview() {
@@ -231,18 +251,22 @@ public class TableToJava extends BaseUI implements IMultiSelect<Table, List<Tabl
         txtTablePrefix.setText(preference.getTablePrefix());
         jcbOverwrite.setSelected(preference.isOverwrite());
         //method prefix
-        txtDelMethodPrefix.setText(JavaMethodUtil.getMethodPrefix(preference, JavaMethodType.DELETE));
+        /*txtDelMethodPrefix.setText(JavaMethodUtil.getMethodPrefix(preference, JavaMethodType.DELETE));
         txtInsertMethodPrefix.setText(JavaMethodUtil.getMethodPrefix(preference, JavaMethodType.INSERT));
         txtInsertBatchMethodPrefix.setText(JavaMethodUtil.getMethodPrefix(preference, JavaMethodType.INSERT_BATCH));
         txtPageQueryMethodPrefix.setText(JavaMethodUtil.getMethodPrefix(preference, JavaMethodType.PAGE_QUERY));
         txtUpdateMethodPrefix.setText(JavaMethodUtil.getMethodPrefix(preference, JavaMethodType.UPDATE));
         txtSelectOneMethodPrefix.setText(JavaMethodUtil.getMethodPrefix(preference, JavaMethodType.SELECT_ONE));
-        txtSelectListMethodPrefix.setText(JavaMethodUtil.getMethodPrefix(preference, JavaMethodType.SELECT_LIST));
+        txtSelectListMethodPrefix.setText(JavaMethodUtil.getMethodPrefix(preference, JavaMethodType.SELECT_LIST));*/
         //spring preference
         txtSpringControllerSuffix.setText(StringUtil.isEmpty(preference.getSpringControllerSuffix()) ? "Controller" : preference.getSpringControllerSuffix());
         txtSpringServiceSuffix.setText(StringUtil.isEmpty(preference.getSpringServiceSuffix()) ? "Service" : preference.getSpringServiceSuffix());
         txtSpringControllerLocation.setText(preference.getSpringControllerLocation());
         txtSpringServiceLocation.setText(preference.getSpringServiceLocation());
+        //load java method name config
+        for (JavaMethodType javaMethodType : JavaMethodType.values()) {
+            this.methodNameConfig.put(javaMethodType.name(), JavaMethodUtil.getMethodPrefix(preference, javaMethodType));
+        }
 
     }
 
@@ -308,7 +332,7 @@ public class TableToJava extends BaseUI implements IMultiSelect<Table, List<Tabl
         boolean mapperGen = jcbGenMapper.isSelected();
         boolean xmlGen = jcbGenXml.isSelected();
         boolean springService = springServiceLocationCheckBox.isSelected();
-        boolean springController = springServiceLocationCheckBox.isSelected();
+        boolean springController = springControllerCheckBox.isSelected();
         boolean gen = beanGen || mapperGen || xmlGen;
         if (isGenerate && !gen)
             throw new PopException(jcbGenBean, "must choose at least one type to generate");
@@ -317,9 +341,9 @@ public class TableToJava extends BaseUI implements IMultiSelect<Table, List<Tabl
         if (isGenerate && (null == tables || tables.trim().length() == 0)) {
             throw new PopException(txtGenTables, "must choose at least one table to generate");
         }
-        if (springService && StringUtil.isEmpty(txtSpringServiceLocation.getText()))
+        if (springService && StringUtil.isEmpty(JavaUtil.parsePackage(txtSpringServiceLocation.getText())))
             throw new PopException(txtGenTables, "must choose spring service bean location");
-        if (springController && StringUtil.isEmpty(txtSpringControllerLocation.getText()))
+        if (springController && StringUtil.isEmpty(JavaUtil.parsePackage(txtSpringControllerLocation.getText())))
             throw new PopException(txtGenTables, "must choose spring controller bean location");
 
         TableToJavaPreference config = new TableToJavaPreference();
@@ -347,13 +371,13 @@ public class TableToJava extends BaseUI implements IMultiSelect<Table, List<Tabl
         config.setLombok(jcbUseLombok.isSelected());
         config.setTables(tables.split(","));
         //method prefix
-        config.setMethodInsert(txtInsertMethodPrefix.getText());
-        config.setMethodQueryList(txtSelectListMethodPrefix.getText());
-        config.setMethodQueryOne(txtSelectOneMethodPrefix.getText());
-        config.setMethodInsertBatch(txtInsertBatchMethodPrefix.getText());
-        config.setMethodPageQuery(txtPageQueryMethodPrefix.getText());
-        config.setMethodDelete(txtDelMethodPrefix.getText());
-        config.setMethodUpdate(txtUpdateMethodPrefix.getText());
+        config.setMethodInsert(getMethodNameConfig(JavaMethodType.INSERT));
+        config.setMethodInsertBatch(getMethodNameConfig(JavaMethodType.INSERT_BATCH));
+        config.setMethodQueryList(getMethodNameConfig(JavaMethodType.SELECT_LIST));
+        config.setMethodQueryOne(getMethodNameConfig(JavaMethodType.SELECT_ONE));
+        config.setMethodPageQuery(getMethodNameConfig(JavaMethodType.PAGE_QUERY));
+        config.setMethodDelete(getMethodNameConfig(JavaMethodType.DELETE));
+        config.setMethodUpdate(getMethodNameConfig(JavaMethodType.UPDATE));
         //spring
         config.setSpringController(springController);
         config.setSpringService(springService);
@@ -362,6 +386,10 @@ public class TableToJava extends BaseUI implements IMultiSelect<Table, List<Tabl
         config.setSpringServiceLocation(txtSpringServiceLocation.getText());
         config.setSpringControllerLocation(txtSpringControllerLocation.getText());
         return config;
+    }
+
+    private String getMethodNameConfig(JavaMethodType type) {
+        return this.methodNameConfig.get(type.name());
     }
 
     private void testConnection(DBConfig config) throws Exception {
@@ -397,6 +425,24 @@ public class TableToJava extends BaseUI implements IMultiSelect<Table, List<Tabl
         }
     }
 
+    @Override
+    public void setUIResult(Map<String, Set<TableMethod>> result) {
+        Set<String> keys = result.keySet();
+        txtGenTables.setText(StringUtil.join(keys.toArray(new String[0]), ","));
+        System.out.println(StringUtil.toJson(result));
+    }
+
+    @Override
+    public void onUIMapConfigFinish(Map<String, String> map) {
+        this.methodNameConfig.putAll(map);
+    }
+
+    @Override
+    public Map<String, String> getDefaultConfig() {
+        return this.methodNameConfig;
+    }
+
+    /*
 
     @Override
     public String getMultiSelectTitle() {
@@ -446,7 +492,7 @@ public class TableToJava extends BaseUI implements IMultiSelect<Table, List<Tabl
     @Override
     public Map<String, List<TableMethod>> getResultMap() {
         return this.methodsConfigMap;
-    }
+    }*/
 
     class GenerateTask implements Runnable {
         private TableToJavaPreference preference;

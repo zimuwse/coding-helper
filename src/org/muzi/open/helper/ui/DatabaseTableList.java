@@ -25,7 +25,7 @@ import static org.muzi.open.helper.util.LogUtils.log;
  * @time: 2019-07-26 18:39
  * @description:
  */
-public class DatabaseTableList extends BaseUI implements MapResult<String, Set<TableMethod>> {
+public class DatabaseTableList extends BaseUI implements MapUIResult<String, Set<TableMethod>> {
     private static final long serialVersionUID = 5368055922684871432L;
     private JPanel panel;
     private JScrollPane jspDBTable;
@@ -35,10 +35,12 @@ public class DatabaseTableList extends BaseUI implements MapResult<String, Set<T
     private TableToJavaPreference preference;
     private List<Table> tables;
     private Map<String, Set<TableMethod>> methods;
+    private UIResult<Map<String, Set<TableMethod>>> uiResult;
 
-    public DatabaseTableList(TableToJavaPreference preference) throws HeadlessException {
+    public DatabaseTableList(TableToJavaPreference preference, UIResult<Map<String, Set<TableMethod>>> uiResult) throws HeadlessException {
         this.preference = preference;
         this.methods = new HashMap<>();
+        this.uiResult = uiResult;
     }
 
     @Override
@@ -50,6 +52,7 @@ public class DatabaseTableList extends BaseUI implements MapResult<String, Set<T
     @Override
     protected void initUI() {
         super.initUI();
+        setTitle("Choose Tables From Database["+preference.getDbName()+"] TO Generate Files");
         try {
             DBOperation operation = DBTypeConfig.getInstance(this.preference);
             operation.connect();
@@ -59,6 +62,24 @@ public class DatabaseTableList extends BaseUI implements MapResult<String, Set<T
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected void initBind() {
+        super.initBind();
+        btnConfirm.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                uiResult.setUIResult(methods);
+                close();
+            }
+        });
+        btnCancel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                close();
+            }
+        });
     }
 
     private void initTable() {
@@ -77,16 +98,14 @@ public class DatabaseTableList extends BaseUI implements MapResult<String, Set<T
             @Override
             public void invoke(ActionEvent e) {
                 TableDataButton button = (TableDataButton) e.getSource();
-                log("invoke=row:{},col:{}", button.getRow(), button.getCol());
                 String tableName = dbTable.getModel().getValueAt(button.getRow(), 1).toString();
-                new ChooseMethod(preference, tableName, DatabaseTableList.this).show(600, 600);
+                new ChooseMethod(preference, tableName, DatabaseTableList.this).show(800, 600);
             }
 
             @Override
             public void onCall(int row, int col) {
-                log("onCall=row:{},col:{}", row, col);
                 String tableName = dbTable.getModel().getValueAt(row, 1).toString();
-                new ChooseMethod(preference, tableName, DatabaseTableList.this).show(600, 600);
+                new ChooseMethod(preference, tableName, DatabaseTableList.this).show(800, 600);
             }
         };
         dbTable.setRowHeight(25);
@@ -104,13 +123,13 @@ public class DatabaseTableList extends BaseUI implements MapResult<String, Set<T
     }
 
     @Override
-    public void addMapResult(String key, Set<TableMethod> val) {
-        log("addMapResult=key:{},val:{}", key, val);
+    public void addMapUIResult(String key, Set<TableMethod> val) {
+        log("addMapUIResult=key:{},val:{}", key, val);
         this.methods.put(key, val);
     }
 
     @Override
-    public Set<TableMethod> getMapResult(String key) {
+    public Set<TableMethod> getMapUIResult(String key) {
         return this.methods.get(key);
     }
 
@@ -179,6 +198,10 @@ public class DatabaseTableList extends BaseUI implements MapResult<String, Set<T
                 label.setHorizontalAlignment(SwingConstants.RIGHT);
                 component = label;
             }
+            component.setForeground(tableHeader.getForeground());
+            component.setBackground(tableHeader.getBackground());
+            component.setFont(tableHeader.getFont());
+            component.setBorder(UIManager.getBorder("TableHeader.cellBorder"));
             return component;
         }
     }
@@ -186,7 +209,7 @@ public class DatabaseTableList extends BaseUI implements MapResult<String, Set<T
     static class ColumnCellRenderer implements TableCellRenderer {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            return new TableDataButton("Config-render", row, column);
+            return new TableDataButton("Config Methods", row, column);
         }
     }
 
@@ -241,7 +264,7 @@ public class DatabaseTableList extends BaseUI implements MapResult<String, Set<T
 
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            TableDataButton button = new TableDataButton("Config-edit", row, column);
+            TableDataButton button = new TableDataButton("Config Methods", row, column);
             button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
