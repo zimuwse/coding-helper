@@ -99,13 +99,13 @@ public class DatabaseTableList extends BaseUI implements MapUIResult<String, Set
             public void invoke(ActionEvent e) {
                 TableDataButton button = (TableDataButton) e.getSource();
                 String tableName = dbTable.getModel().getValueAt(button.getRow(), 1).toString();
-                new ChooseMethod(preference, tableName, DatabaseTableList.this).show(800, 600);
+                new MethodConfig(preference, tableName, DatabaseTableList.this).show(800, 600);
             }
 
             @Override
             public void onCall(int row, int col) {
                 String tableName = dbTable.getModel().getValueAt(row, 1).toString();
-                new ChooseMethod(preference, tableName, DatabaseTableList.this).show(800, 600);
+                new MethodConfig(preference, tableName, DatabaseTableList.this).show(800, 600);
             }
         };
         dbTable.setRowHeight(25);

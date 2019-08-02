@@ -1,0 +1,25 @@
+package ${packageName};
+
+#foreach($item in $imports)
+import ${item};
+#end
+
+/**
+* @author: ${author}
+* @time: ${createTime}
+* @table: ${bean.table.name}
+* @description: ${bean.table.comment}
+*/
+@Service
+public interface ${clzName} {
+#foreach($mapperMethod in $mapperMethods)
+
+    /**
+     #foreach($parameter in $mapperMethod.parameters)* @param #if($mapperMethod.name=="updateById")entity #else ${parameter.javaName} #end ${parameter.comment}#end
+
+     * @return ${mapperMethod.returnType}
+     */
+    ${mapperMethod.returnType} ${mapperMethod.name}(#foreach($parameter in $mapperMethod.parameters)#if($parameter.annotation)@Param("${parameter.javaName}") #end${parameter.javaType} ${parameter.paramName}#if($foreach.hasNext), #end#end);
+#end
+
+}

@@ -37,11 +37,14 @@ public class MethodPrefixConfig extends BaseUI {
     @Override
     protected void initUI() {
         super.initUI();
-        GridLayout layout = new GridLayout(JavaMethodType.values().length, 2);
+        setTitle("Method Prefix Config");
+        GridLayout layout = new GridLayout(JavaMethodType.values().length + 1, 2);
         wrapper.setLayout(layout);
         Map<String, String> map = uiMapConfig.getDefaultConfig();
+        wrapper.add(new JLabel("Method Type"));
+        wrapper.add(new JLabel("Method Prefix"));
         for (Map.Entry<String, String> entry : map.entrySet()) {
-            wrapper.add(new JLabel(entry.getKey() + " Method Prefix"));
+            wrapper.add(new JLabel(entry.getKey()));
             JTextField textField = new JTextField(entry.getValue());
             textField.setToolTipText(entry.getKey());
             wrapper.add(textField);

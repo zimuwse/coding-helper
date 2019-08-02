@@ -21,6 +21,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -263,11 +264,12 @@ public class TableToJava extends BaseUI implements UIResult<Map<String, Set<Tabl
         txtSpringServiceSuffix.setText(StringUtil.isEmpty(preference.getSpringServiceSuffix()) ? "Service" : preference.getSpringServiceSuffix());
         txtSpringControllerLocation.setText(preference.getSpringControllerLocation());
         txtSpringServiceLocation.setText(preference.getSpringServiceLocation());
+        springControllerCheckBox.setSelected(preference.isSpringController());
+        springServiceLocationCheckBox.setSelected(preference.isSpringService());
         //load java method name config
         for (JavaMethodType javaMethodType : JavaMethodType.values()) {
             this.methodNameConfig.put(javaMethodType.name(), JavaMethodUtil.getMethodPrefix(preference, javaMethodType));
         }
-
     }
 
     private TableToJavaPreference getPreference(int operation) {

@@ -15,6 +15,8 @@ public class JavaMethodUtil {
 
 
     public static String getPreferenceMethodPrefix(TableToJavaPreference preference, JavaMethodType methodType) {
+        if (null == preference)
+            return null;
         switch (methodType) {
             case PAGE_QUERY:
                 return preference.getMethodPageQuery();

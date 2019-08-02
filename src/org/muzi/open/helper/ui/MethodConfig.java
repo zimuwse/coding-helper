@@ -27,7 +27,7 @@ import static org.muzi.open.helper.util.LogUtils.log;
  * @time: 2019-07-23 22:32
  * @description:
  */
-public class ChooseMethod extends BaseUI {
+public class MethodConfig extends BaseUI {
     private static final long serialVersionUID = 7389911664362150067L;
     private JPanel panel;
     private JTable tableFieldsHolder;
@@ -51,7 +51,7 @@ public class ChooseMethod extends BaseUI {
         return panel;
     }
 
-    public ChooseMethod(TableToJavaPreference preference, String table, MapUIResult<String, Set<TableMethod>> mapUIResult) {
+    public MethodConfig(TableToJavaPreference preference, String table, MapUIResult<String, Set<TableMethod>> mapUIResult) {
         this.preference = preference;
         this.table = table;
         this.mapUIResult = mapUIResult;
@@ -68,7 +68,7 @@ public class ChooseMethod extends BaseUI {
             }
             operation.close();
         } catch (Exception e) {
-            log("ChooseMethod=err:{}", e);
+            log("MethodConfig=err:{}", e);
             PopUtil.pop(e);
         }
     }

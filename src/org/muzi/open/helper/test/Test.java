@@ -20,7 +20,7 @@ public class Test {
         preference.setMethodQueryOne("getBy");
         preference.setMethodQueryList("getListBy");
         preference.setMethodInsert("add");
-        //new ChooseMethod(preference, "order").show(600, 600);
+        //new MethodConfig(preference, "order").show(600, 600);
         new DatabaseTableList(preference, null).show(600, 600);*/
 
 
