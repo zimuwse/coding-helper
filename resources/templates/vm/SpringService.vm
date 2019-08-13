@@ -7,19 +7,30 @@ import ${item};
 /**
 * @author: ${author}
 * @time: ${createTime}
-* @table: ${bean.table.name}
-* @description: ${bean.table.comment}
+* @description: ${comment}
 */
-@Service
-public interface ${clzName} {
-#foreach($mapperMethod in $mapperMethods)
+${annotation}
+public class ${clzName} {
+    #if(!${lombokLog})
+    private final static Logger log = LoggerFactory.getLogger(${clzName}.class);
+    #end
+
+    @Autowired
+    private ${mapperName} ${mapperFieldName};
+
+#foreach($method in $methods)
 
     /**
-     #foreach($parameter in $mapperMethod.parameters)* @param #if($mapperMethod.name=="updateById")entity #else ${parameter.javaName} #end ${parameter.comment}#end
+     #foreach($parameter in $method.parameters)* @param #if($method.tpye=="INSERT"||$method.tpye=="INSERT_BATCH"||$method.tpye=="UPDATE"||$method.tpye=="DELETE")entity #else ${parameter.javaName} #end ${parameter.comment}#end
 
-     * @return ${mapperMethod.returnType}
+     * @return ${method.returnType}
      */
-    ${mapperMethod.returnType} ${mapperMethod.name}(#foreach($parameter in $mapperMethod.parameters)#if($parameter.annotation)@Param("${parameter.javaName}") #end${parameter.javaType} ${parameter.paramName}#if($foreach.hasNext), #end#end);
+    public ${method.returnType} ${method.name}(#foreach($parameter in $method.parameters)${parameter.javaType} ${parameter.paramName}#if($foreach.hasNext), #end#end){
+        log.info("${method.name}=#foreach($parameter in $method.parameters)${parameter.paramName}#if($foreach.hasNext){}, #end#end",#foreach($parameter in $method.parameters)${parameter.paramName}#if($foreach.hasNext), #end#end);
+        ${method.returnType} result= ${mapperFieldName}.${method.name}(#foreach($parameter in $method.parameters)${parameter.paramName}#if($foreach.hasNext), #end#end);
+        log.info("${method.name}=#foreach($parameter in $method.parameters)${parameter.paramName}#if($foreach.hasNext){}, #end#end,result:{}",#foreach($parameter in $method.parameters)${parameter.paramName}#if($foreach.hasNext), #end#end, result);
+        return result;
+    }
 #end
 
 }

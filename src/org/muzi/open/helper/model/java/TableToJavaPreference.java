@@ -25,7 +25,8 @@ public class TableToJavaPreference extends DBConfig {
     private boolean xmlGen;
     private String previewTable;
     private boolean overwrite;
-    private boolean lombok;
+    private boolean lombokData;
+    private boolean lombokLog;
     @PersistableConfig(skip = true)
     private String[] tables;
     //method config from table fields.
@@ -50,6 +51,8 @@ public class TableToJavaPreference extends DBConfig {
     private String springControllerSuffix;
     private String springServiceLocation;
     private String springControllerLocation;
+    @PersistableConfig(skip = true)
+    private String createTime;
 
     public String getAuthor() {
         return author;
@@ -164,13 +167,20 @@ public class TableToJavaPreference extends DBConfig {
     }
 
     public boolean isLombok() {
-        return lombok;
+        return lombokData;
     }
 
     public void setLombok(boolean lombok) {
-        this.lombok = lombok;
+        this.lombokData = lombok;
     }
 
+    public boolean isLombokLog() {
+        return lombokLog;
+    }
+
+    public void setLombokLog(boolean lombokLog) {
+        this.lombokLog = lombokLog;
+    }
 
     public List<JavaMethodConfig> getJavaMethodConfigs() {
         return javaMethodConfigs;
@@ -314,5 +324,13 @@ public class TableToJavaPreference extends DBConfig {
 
     public void setSpringController(boolean springController) {
         this.springController = springController;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
     }
 }

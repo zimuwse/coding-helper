@@ -1,6 +1,8 @@
 package org.muzi.open.helper.model.java;
 
+import java.util.Comparator;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author: muzi
@@ -12,7 +14,12 @@ public class JavaClass {
     private String createTime;
     private String packageName;
     private String clzName;
-    private Set<String> imports;
+    private Set<String> imports = new TreeSet<>(new Comparator<String>() {
+        @Override
+        public int compare(String o1, String o2) {
+            return o1.compareTo(o2);
+        }
+    });
     private String parentClzName;
 
     public String getAuthor() {
@@ -51,8 +58,12 @@ public class JavaClass {
         return imports;
     }
 
-    public void setImports(Set<String> imports) {
-        this.imports = imports;
+    public void addImports(Set<String> imports) {
+        this.imports.addAll(imports);
+    }
+
+    public void addImport(String _import) {
+        this.imports.add(_import);
     }
 
     public String getParentClzName() {

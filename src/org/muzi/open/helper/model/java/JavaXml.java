@@ -24,15 +24,15 @@ public class JavaXml {
     }
 
     public String getBeanName() {
-        return mapper.getBean().getPackageName() + "." + mapper.getBean().getClzName();
+        return mapper.getJavaBean().getPackageName() + "." + mapper.getJavaBean().getClzName();
     }
 
     public String getMapName() {
-        return StringUtil.lowerFirst(mapper.getBean().getClzName()) + "Map";
+        return StringUtil.lowerFirst(mapper.getJavaBean().getClzName()) + "Map";
     }
 
     public List<JavaField> getJavaFields() {
-        return mapper.getBean().getFields();
+        return mapper.getJavaBean().getFields();
     }
 
     public Set<MapperMethod> getMapperMethods() {
@@ -40,7 +40,7 @@ public class JavaXml {
     }
 
     public String getTableName() {
-        return mapper.getBean().getTable().getName();
+        return mapper.getJavaBean().getTable().getName();
     }
 
 }

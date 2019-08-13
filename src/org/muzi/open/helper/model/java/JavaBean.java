@@ -4,10 +4,7 @@ import org.muzi.open.helper.model.db.Table;
 import org.muzi.open.helper.util.JavaUtil;
 import org.muzi.open.helper.util.StringUtil;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * @author: muzi
@@ -18,30 +15,28 @@ public class JavaBean extends JavaClass {
     private Table table;
     private List<JavaField> fields;
     private boolean useLombok;
+    private String camelName;
 
-
-    public JavaBean(Table table, String packageName, String prefixToRemove, String beanNameSuffix, List<JavaField> fields, String author, String createTime) {
+    public JavaBean(TableToJavaPreference preference, Table table, List<JavaField> fields) {
         this.fields = fields;
         this.table = table;
-        if (StringUtil.isEmpty(beanNameSuffix))
-            beanNameSuffix = "Entity";
-        String name = StringUtil.removeHead(table.getName(), prefixToRemove);
-        setClzName(StringUtil.upperFirst(StringUtil.camelCase(name)) + beanNameSuffix);
-        Set<String> imports = new TreeSet<>(new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                return o1.compareTo(o2);
-            }
-        });
+        if (StringUtil.isEmpty(preference.getBeanSuffix()))
+            preference.setBeanSuffix("Entity");
+        String name = StringUtil.removeHead(table.getName(), preference.getTablePrefix());
+        this.camelName = StringUtil.camelCase(name);
+        setClzName(StringUtil.upperFirst(this.camelName) + preference.getBeanSuffix());
         for (JavaField field : fields) {
             if (JavaUtil.needImport(field.getFieldTypeClz())) {
-                imports.add(field.getFieldTypeClz().getName());
+                addImport(field.getFieldTypeClz().getName());
             }
         }
-        setImports(imports);
-        setPackageName(packageName);
-        setAuthor(author);
-        setCreateTime(createTime);
+        setPackageName(preference.getBeanPackage());
+        setAuthor(preference.getAuthor());
+        setCreateTime(preference.getCreateTime());
+        this.useLombok = preference.isLombok();
+        if (preference.isLombok()) {
+            getImports().add("lombok.Data");
+        }
     }
 
     public Table getTable() {
@@ -52,11 +47,11 @@ public class JavaBean extends JavaClass {
         return fields;
     }
 
-    public boolean getUseLombok() {
-        return useLombok;
+    public String getCamelName() {
+        return camelName;
     }
 
-    public void setUseLombok(boolean useLombok) {
-        this.useLombok = useLombok;
+    public boolean getUseLombok() {
+        return useLombok;
     }
 }

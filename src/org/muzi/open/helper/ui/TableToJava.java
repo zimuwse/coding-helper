@@ -10,7 +10,6 @@ import org.muzi.open.helper.model.KV;
 import org.muzi.open.helper.model.PopException;
 import org.muzi.open.helper.model.db.Table;
 import org.muzi.open.helper.model.db.TableField;
-import org.muzi.open.helper.model.db.TableIndex;
 import org.muzi.open.helper.model.db.TableMethod;
 import org.muzi.open.helper.model.java.*;
 import org.muzi.open.helper.service.tplengine.velocity.VelocityTplEngine;
@@ -21,7 +20,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -74,7 +72,7 @@ public class TableToJava extends BaseUI implements UIResult<Map<String, Set<Tabl
     private JTextField txtSpringControllerSuffix;
     private JButton btnChooseTables;
 
-    private Map<String, List<TableMethod>> methodsConfigMap = new HashMap<>();
+    private Map<String, Set<TableMethod>> methodsConfigMap;
 
     private Map<String, String> methodNameConfig = new HashMap<>();
 
@@ -126,7 +124,7 @@ public class TableToJava extends BaseUI implements UIResult<Map<String, Set<Tabl
             public void actionPerformed(ActionEvent event) {
                 try {
                     TableToJavaPreference preference = getPreference(OperatorType.GENERATE);
-                    new Thread(new GenerateTask(preference)).start();
+                    new Thread(new GenerateTask(preference, methodsConfigMap)).start();
                 } catch (Exception e) {
                     PopUtil.pop(e);
                 }
@@ -431,7 +429,7 @@ public class TableToJava extends BaseUI implements UIResult<Map<String, Set<Tabl
     public void setUIResult(Map<String, Set<TableMethod>> result) {
         Set<String> keys = result.keySet();
         txtGenTables.setText(StringUtil.join(keys.toArray(new String[0]), ","));
-        System.out.println(StringUtil.toJson(result));
+        this.methodsConfigMap = result;
     }
 
     @Override
@@ -505,11 +503,14 @@ public class TableToJava extends BaseUI implements UIResult<Map<String, Set<Tabl
 
         private VelocityTplEngine engine;
 
-        public GenerateTask(TableToJavaPreference preference) throws Exception {
+        private Map<String, Set<TableMethod>> tableMethods;
+
+        public GenerateTask(TableToJavaPreference preference, Map<String, Set<TableMethod>> tableMethods) throws Exception {
             this.preference = preference;
             this.operation = DBTypeConfig.getInstance(preference);
             this.progress = new Progress("FILE GENERATING TASK ON DB[" + preference.getDbName() + "] IS RUNNING...");
-            engine = new VelocityTplEngine();
+            this.engine = new VelocityTplEngine();
+            this.tableMethods = tableMethods;
         }
 
 
@@ -536,11 +537,11 @@ public class TableToJava extends BaseUI implements UIResult<Map<String, Set<Tabl
                     operation.close();
                     return;
                 }
-                int total = tableList.size();
+                final int total = tableList.size();
                 BigDecimal totalValue = new BigDecimal(total);
-                int threadCount = Runtime.getRuntime().availableProcessors();
+                int threadCount = Runtime.getRuntime().availableProcessors() + 1;
                 final Queue<Table> queue = new LinkedBlockingQueue<>(tableList);
-                final String time = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date());
+                preference.setCreateTime(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date()));
                 final long start = System.currentTimeMillis();
                 final AtomicInteger counter = new AtomicInteger(total);
                 for (int i = 0; i < threadCount; i++) {
@@ -550,7 +551,7 @@ public class TableToJava extends BaseUI implements UIResult<Map<String, Set<Tabl
                             Table t = null;
                             while ((t = queue.poll()) != null) {
                                 try {
-                                    process(t, preference.isBeanGen(), preference.isMapperGen(), preference.isXmlGen(), preference.isOverwrite(), time);
+                                    process(t, preference);
                                 } catch (Exception e) {
                                     progress.append(e.toString());
                                 }
@@ -584,25 +585,24 @@ public class TableToJava extends BaseUI implements UIResult<Map<String, Set<Tabl
 
         /**
          * @param table
-         * @param bean
-         * @param mapper
-         * @param xml
-         * @param overwrite
-         * @param time
+         * @param preference
          * @throws Exception
          */
-        private void process(Table table, boolean bean, boolean mapper, boolean xml, boolean overwrite, String time) throws Exception {
+        private void process(Table table, TableToJavaPreference preference) throws Exception {
+            boolean bean = preference.isBeanGen();
+            boolean overwrite = preference.isOverwrite();
+            boolean mapper = preference.isMapperGen();
+            boolean xml = preference.isXmlGen();
+            boolean springService = preference.isSpringService();
+            boolean seringController = preference.isSpringController();
             progress.append("[PROCESS-START:" + table.getName() + "(" + table.getComment() + ")]");
             List<TableField> fields = operation.fields(table.getName());
             List<JavaField> javaFields = operation.toJavaFields(fields);
-            List<TableIndex> indices = operation.indexes(table.getName());
-            JavaBean javaBean = new JavaBean(table, preference.getBeanPackage(), preference.getTablePrefix(), preference.getBeanSuffix(), javaFields, preference.getAuthor(), time);
-            javaBean.setUseLombok(preference.isLombok());
-            if (preference.isLombok()) {
-                javaBean.getImports().add("lombok.Data");
-            }
-            JavaMapper javaMapper = new JavaMapper(javaBean, preference.getMapperPackage(), preference.getAuthor(), time, preference.getTablePrefix(), preference.getMapperSuffix(), indices);
+            JavaBean javaBean = new JavaBean(preference, table, javaFields);
+            JavaMapper javaMapper = new JavaMapper(preference, javaBean, methodsConfigMap.get(table.getName()));
             JavaXml javaXml = new JavaXml(javaMapper);
+            SpringServiceBean springServiceBean = new SpringServiceBean(preference, javaBean, javaMapper, javaMapper.getMapperMethods());
+            SpringControllerBean springControllerBean = new SpringControllerBean(preference, javaBean, javaMapper, javaMapper.getMapperMethods());
             if (bean) {
                 String path = preference.getBeanLocation() + File.separator + javaBean.getClzName() + ".java";
                 File file = new File(path);

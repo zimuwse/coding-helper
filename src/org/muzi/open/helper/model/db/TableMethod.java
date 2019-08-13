@@ -17,6 +17,10 @@ public class TableMethod {
     //params
     private List<String> tableFields;
 
+    public TableMethod(TableMethod tableMethod) {
+        this(tableMethod.tableName, tableMethod.methodType, tableMethod.methodName, tableMethod.tableFields);
+    }
+
     public TableMethod(String tableName, String methodType, String methodName, List<String> tableFields) {
         this.tableName = tableName;
         this.methodType = methodType;
